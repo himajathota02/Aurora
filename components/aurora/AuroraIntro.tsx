@@ -56,7 +56,7 @@ export function AuroraIntro({ reducedMotion, onEnter }: Props) {
       <div className="intro-dialogue" aria-live="polite" aria-atomic="true">
         <AnimatePresence initial={false}>
           {visibleDialogueStage >= 1 && <motion.h1 key="hello" id="aurora-greeting" className="intro-dialogue-line intro-dialogue-first" initial={{ opacity: 0, y: reducedMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: reducedMotion ? 0 : 0.75, ease: [0.2, 0.7, 0.2, 1] }} > Hello Masteruu...  !</motion.h1>}
-          {visibleDialogueStage >= 2 && <motion.p key="invitation" className="intro-subtitle intro-dialogue-line" initial={{ opacity: 0, y: reducedMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.85, ease: [0.2, 0.7, 0.2, 1] }}>Ela unnaru...?! Padandi budget friendly ga northen lights cover cheddam..</motion.p>}
+          {visibleDialogueStage >= 2 && <motion.p key="invitation" className="intro-subtitle intro-dialogue-line" initial={{ opacity: 0, y: reducedMotion ? 0 : 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: reducedMotion ? 0 : 0.85, ease: [0.2, 0.7, 0.2, 1] }}>Ela unnaru...?! Padhandi budget friendly ga northen lights cover cheddam..</motion.p>}
         </AnimatePresence>
       </div>
       <AnimatePresence>
