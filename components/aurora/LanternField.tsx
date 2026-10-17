@@ -171,14 +171,22 @@ export function LanternField({ active, cabinPreview = false, videoFinale = false
         "--scale": lantern.scale.toFixed(2), "--glow": lantern.glow.toFixed(2), "--delay": `${-(index * 1.63).toFixed(2)}s`,
         "--reveal-delay": `${reducedMotion ? 0 : index * 0.08}s`,
         "--float": `${8 + (index % 4) * 1.7}s`, "--lantern-width": `${10 + lantern.scale * 3}px`, "--lantern-height": `${19 + lantern.scale * 5}px`,
-        "--final-paper-width": `${14 + lantern.scale * 5}px`, "--final-paper-height": `${23 + lantern.scale * 8}px`,
+        "--final-paper-width": `${22 + lantern.scale * 7}px`, "--final-paper-height": `${33 + lantern.scale * 12}px`,
+        "--flicker-delay": `${-(index % 7) * 0.19}s`, "--flicker-duration": `${1.35 + (index % 5) * 0.17}s`,
+        "--ember-delay": `${-(index % 9) * 0.37}s`,
       } as CSSProperties;
       const chosen = selectedId === id;
       const isReleased = releasedIds.has(id);
       return <button className={`lantern-hit ${chosen ? "is-selected" : ""} ${chosen && releasing ? "is-releasing" : ""} ${isReleased ? "is-released" : ""}`} style={style} key={id} id={`aurora-lantern-${id}`} data-lantern-id={id} data-lantern-index={index} data-video-lantern={videoFinale ? "true" : undefined}
         aria-label={isReleased ? `Wish lantern ${index + 1} has been released` : `${cabinPreview ? "Enter the sky with" : "Read"} wish lantern ${index + 1}`} aria-pressed={chosen} tabIndex={interactive && selectedId === null && (!videoFinale || videoSelectable) && !isReleased && focusId === index ? 0 : -1} disabled={isReleased || (videoFinale && !videoSelectable) || (chosen && releasing)}
         onFocus={() => setFocusId(index)} onKeyDown={(event) => moveFocus(event, index)} onClick={() => { if (selectedId !== null || isReleased || (videoFinale && !videoSelectable)) return; setFocusId(index); onSelect(id); }}>
-        <span className="lantern-glow"/><span className="lantern-paper"/><span className="lantern-thread"/>
+        <span className="lantern-glow" aria-hidden="true"/>
+        <span className="lantern-paper" aria-hidden="true"><span className="lantern-paper-seam"/></span>
+        <span className="lantern-frame" aria-hidden="true"/>
+        <span className="lantern-flame" aria-hidden="true"/>
+        <span className="lantern-ember lantern-ember-one" aria-hidden="true"/>
+        <span className="lantern-ember lantern-ember-two" aria-hidden="true"/>
+        <span className="lantern-thread" aria-hidden="true"/>
       </button>;
     })}
   </div>;

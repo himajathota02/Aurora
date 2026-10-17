@@ -9,6 +9,7 @@ import { CassetteMusicVideo } from "../components/cassette/CassetteMusicVideo";
 import { AudioPlayer, type AudioPlayerController } from "../components/cassette/AudioPlayer";
 import { AuroraIntro } from "../components/aurora/AuroraIntro";
 import { BirthdayFinaleOverlay } from "../components/aurora/BirthdayFinaleOverlay";
+import { FinaleVideoBackground } from "../components/aurora/FinaleVideoBackground";
 import { AuroraWorldVideo } from "../components/aurora/AuroraWorldVideo";
 import { LanternTransitionVideo, type LanternVideoPhase } from "../components/aurora/LanternTransitionVideo";
 import { LanternField } from "../components/aurora/LanternField";
@@ -32,6 +33,7 @@ export default function AuroraPage() {
   const [finalLanternsVisible, setFinalLanternsVisible] = useState(false);
   const [finalLanternsRevealed, setFinalLanternsRevealed] = useState(false);
   const [finalLanternsReady, setFinalLanternsReady] = useState(false);
+  const [finaleBackgroundReady, setFinaleBackgroundReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playerLoading, setPlayerLoading] = useState(false);
   const [playerError, setPlayerError] = useState("");
@@ -47,6 +49,7 @@ export default function AuroraPage() {
   const ambienceGainRef = useRef<GainNode | null>(null);
 
   const song = activeIndex === null ? null : songs[activeIndex] || null;
+  const allWishesReleased = releasedLanterns.size === wishData.length;
 
   useEffect(() => {
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -93,6 +96,7 @@ export default function AuroraPage() {
     setDuration(total);
   }, []);
   const onPlayerReady = useCallback(() => setPlayerLoading(false), []);
+  const onFinaleBackgroundReady = useCallback(() => setFinaleBackgroundReady(true), []);
   const onPlayerLoading = useCallback(() => {
     setPlayerLoading(true);
     setPlayerError("");
@@ -121,6 +125,7 @@ export default function AuroraPage() {
     setFinalLanternsVisible(false);
     setFinalLanternsRevealed(false);
     setFinalLanternsReady(false);
+    setFinaleBackgroundReady(false);
     setSelectedLantern(null);
     setAffirmation(null);
     setLanternTransition("idle");
@@ -143,6 +148,7 @@ export default function AuroraPage() {
     setFinalLanternsVisible(false);
     setFinalLanternsRevealed(false);
     setFinalLanternsReady(false);
+    setFinaleBackgroundReady(false);
     setScene("wish-lanterns");
     setSkyTransitioning(true);
     setLanternTransition("to-wishes");
@@ -219,6 +225,7 @@ export default function AuroraPage() {
     setFinalLanternsVisible(false);
     setFinalLanternsRevealed(false);
     setFinalLanternsReady(false);
+    setFinaleBackgroundReady(false);
     setScene("aurora-world");
     setLanternTransition("to-aurora");
     setSkyTransitioning(true);
@@ -296,6 +303,7 @@ export default function AuroraPage() {
     setFinalLanternsVisible(false);
     setFinalLanternsRevealed(false);
     setFinalLanternsReady(false);
+    setFinaleBackgroundReady(false);
     setSkyTransitioning(false);
     setSelectedLantern(null);
     setAffirmation(null);
@@ -303,11 +311,17 @@ export default function AuroraPage() {
   };
 
   const videoWishScene = scene === "wish-lanterns" && finalLanternsVisible;
+  const resetReleasedWishes = () => {
+    setReleasedLanterns(new Set());
+    setSelectedLantern(null);
+    setAffirmation(null);
+    setWishReleasing(false);
+  };
 
   return <main className={`aurora-world scene-${scene} ${reducedMotion ? "reduced-motion" : ""} ${skyTransitioning ? "sky-transitioning" : ""} ${videoWishScene ? "video-sky-ending" : ""} ${videoWishScene && lanternTransition === "holding" ? "video-sky-held" : ""}`} aria-busy={skyTransitioning || undefined}>
     <AuroraWorldVideo active={scene === "aurora-world" || scene === "cassette"} reducedMotion={reducedMotion}/>
     <CassetteMusicVideo active={scene === "cassette"} reducedMotion={reducedMotion}/>
-    {videoWishScene && <LanternField active={false} videoFinale finaleRevealed={finalLanternsRevealed} videoSelectable={lanternTransition === "holding" && finalLanternsReady} selectedId={selectedLantern} releasedIds={releasedLanterns} releasing={wishReleasing || (selectedLantern !== null && affirmation === null && !skyTransitioning)} reducedMotion={reducedMotion} onSelect={chooseLantern}/>}
+    {videoWishScene && <LanternField active={false} videoFinale finaleRevealed={finalLanternsRevealed} videoSelectable={lanternTransition === "holding" && finalLanternsRevealed} selectedId={selectedLantern} releasedIds={releasedLanterns} releasing={wishReleasing || (selectedLantern !== null && affirmation === null && !skyTransitioning)} reducedMotion={reducedMotion} onSelect={chooseLantern}/>}
 
     <header className="world-header">
       <Link href="/" className="world-mark" aria-label="Return to the AURORA opening scene" onClick={(event) => { event.preventDefault(); returnOpening(); }}><span className="mark-spark">✳</span><span>AURORA</span></Link>
@@ -369,7 +383,8 @@ export default function AuroraPage() {
     </AnimatePresence>
 
     <LanternTransitionVideo phase={lanternTransition} reducedMotion={reducedMotion} finaleVisible={videoWishScene} onFinalLanterns={revealFinalLanterns} onHold={holdFinalVideoFrame} onReturnComplete={finishReturnToAurora}/>
-    {videoWishScene && lanternTransition === "holding" && <BirthdayFinaleOverlay reducedMotion={reducedMotion} onLanternsReveal={() => setFinalLanternsRevealed(true)} onLanternsReady={() => setFinalLanternsReady(true)}/>}
+    {scene === "wish-lanterns" && lanternTransition !== "idle" && <FinaleVideoBackground active={videoWishScene && lanternTransition === "holding"} reducedMotion={reducedMotion} onReady={onFinaleBackgroundReady}/>}
+    {videoWishScene && lanternTransition === "holding" && <BirthdayFinaleOverlay reducedMotion={reducedMotion} backgroundReady={finaleBackgroundReady} allWishesReleased={allWishesReleased && !wishReleasing} onLanternsReveal={() => setFinalLanternsRevealed(true)} onLanternsReady={() => setFinalLanternsReady(true)} onSeeWishesAgain={resetReleasedWishes}/>}
 
     {/* One audio element stays mounted above every scene. Scene transitions never reset its source or time. */}
     <AudioPlayer ref={playerRef} volume={volume} onPlaying={onPlayerPlaying} onProgress={onPlayerProgress} onReady={onPlayerReady} onLoading={onPlayerLoading} onError={onPlayerError} onEnded={onPlayerEnded}/>

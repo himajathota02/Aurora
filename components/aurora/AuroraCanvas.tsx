@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-type AuroraCanvasProps = { reducedMotion: boolean; warm?: boolean };
+type AuroraCanvasProps = { reducedMotion: boolean; warm?: boolean; finale?: boolean };
 type Particle = { x: number; y: number; r: number; speed: number; drift: number; alpha: number; ember: boolean; phase: number };
 
 function random(seed: number) {
@@ -10,7 +10,7 @@ function random(seed: number) {
   return () => { value = (value * 1664525 + 1013904223) >>> 0; return value / 4294967296; };
 }
 
-export function AuroraCanvas({ reducedMotion, warm = false }: AuroraCanvasProps) {
+export function AuroraCanvas({ reducedMotion, warm = false, finale = false }: AuroraCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const motionRef = useRef(reducedMotion);
   const warmRef = useRef(warm);
@@ -50,14 +50,16 @@ export function AuroraCanvas({ reducedMotion, warm = false }: AuroraCanvasProps)
       const baseY = height * (0.12 + layer * 0.075);
       const thickness = height * (0.12 + layer * 0.026);
       const phase = layer * 1.71;
-      const speed = motionRef.current ? 0.000018 : 0.000075;
+      // The finale needs a clearly readable curtain drift while its film is held.
+      const speed = motionRef.current ? 0.000018 : finale ? 0.000105 : 0.000075;
       const amplitude = height * (0.035 + layer * 0.005);
       const offset = time * speed;
       const gradient = ctx.createLinearGradient(0, baseY - thickness, 0, baseY + thickness * 1.15);
       gradient.addColorStop(0, "rgba(72, 220, 170, 0)");
-      gradient.addColorStop(0.23, `rgba(42, 203, 145, ${0.012 + layer * 0.003})`);
-      gradient.addColorStop(0.56, `rgba(80, 224, 166, ${0.034 + layer * 0.004})`);
-      gradient.addColorStop(0.82, `rgba(112, 227, 191, ${0.018 + layer * 0.002})`);
+      const strength = finale ? 2.35 : 1;
+      gradient.addColorStop(0.23, `rgba(42, 203, 145, ${(0.012 + layer * 0.003) * strength})`);
+      gradient.addColorStop(0.56, `rgba(80, 224, 166, ${(0.034 + layer * 0.004) * strength})`);
+      gradient.addColorStop(0.82, `rgba(112, 227, 191, ${(0.018 + layer * 0.002) * strength})`);
       gradient.addColorStop(1, "rgba(80, 220, 174, 0)");
       ctx.beginPath();
       for (let x = -10; x <= width + 12; x += 10) {
@@ -90,8 +92,8 @@ export function AuroraCanvas({ reducedMotion, warm = false }: AuroraCanvasProps)
         const bottom = baseY + thickness * 1.1 + Math.sin(offset * 0.6 + i) * height * 0.04;
         const beam = ctx.createLinearGradient(x, top, x + lean, bottom);
         beam.addColorStop(0, "rgba(98, 232, 177, 0)");
-        beam.addColorStop(0.34, `rgba(148, 249, 197, ${0.018 + 0.01 * Math.sin(i + offset)})`);
-        beam.addColorStop(0.72, "rgba(55, 196, 151, .025)");
+        beam.addColorStop(0.34, `rgba(148, 249, 197, ${(0.018 + 0.01 * Math.sin(i + offset)) * strength})`);
+        beam.addColorStop(0.72, `rgba(55, 196, 151, ${0.025 * strength})`);
         beam.addColorStop(1, "rgba(67, 204, 171, 0)");
         ctx.beginPath();
         ctx.moveTo(x, top);
@@ -145,7 +147,7 @@ export function AuroraCanvas({ reducedMotion, warm = false }: AuroraCanvasProps)
     window.addEventListener("resize", resize, { passive: true });
     frame = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(frame); window.clearTimeout(timer); window.removeEventListener("resize", resize); };
-  }, []);
+  }, [finale]);
 
   return <canvas ref={canvasRef} className="aurora-canvas" aria-hidden="true" />;
 }

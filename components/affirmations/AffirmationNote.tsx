@@ -30,6 +30,7 @@ export function AffirmationNote({ affirmation, onClose, onRelease, releasing = f
   return <motion.article className="affirmation-note" initial={{ opacity: 0, y: reducedMotion ? 0 : 17, scale: reducedMotion ? 1 : 0.985, scaleY: reducedMotion ? 1 : 0.94, rotate: reducedMotion ? 0 : -0.4, rotateX: reducedMotion ? 0 : 4, transformOrigin: "center top" }} animate={{ opacity: 1, y: 0, scale: 1, scaleY: 1, rotate: 0, rotateX: 0 }} exit="exit" variants={{ exit: exitNote }} custom={releasing} transition={{ duration: reducedMotion ? 0.1 : 0.75, ease: [0.2, 0.75, 0.2, 1] }} style={{ transformStyle: "preserve-3d", perspective: 900 }} role="dialog" aria-modal="true" aria-labelledby="affirmation-text" aria-describedby="wish-note-opening affirmation-text" onKeyDown={trapFocus}>
     <button ref={closeRef} className="note-close" onClick={onClose} aria-label="Close this note"><X size={17}/></button>
     <p className="note-opening" id="wish-note-opening">{affirmation.opening || "A little note for you."}</p>
+    {affirmation.category && <p className="note-category">{affirmation.category}</p>}
     <span className="note-rule"/>
     <h2 id="affirmation-text">{affirmation.message}</h2>
     <span className="note-ornament" aria-hidden="true">✧</span>
