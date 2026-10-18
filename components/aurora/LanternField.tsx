@@ -28,7 +28,7 @@ export function LanternField({ active, cabinPreview = false, videoFinale = false
 
   useEffect(() => {
     if (!active) return;
-    return;
+    
     const canvas = canvasRef.current;
     const host = canvas?.parentElement;
     const context = canvas?.getContext("2d", { alpha: true });
