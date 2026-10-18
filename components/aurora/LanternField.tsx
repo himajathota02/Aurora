@@ -24,10 +24,11 @@ export function LanternField({ active, cabinPreview = false, videoFinale = false
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const [focusId, setFocusId] = useState(0);
-  const lanterns = useMemo(() => makeLanterns(250), []);
+  const lanterns = useMemo(() => makeLanterns(30), []);
 
   useEffect(() => {
     if (!active) return;
+    return;
     const canvas = canvasRef.current;
     const host = canvas?.parentElement;
     const context = canvas?.getContext("2d", { alpha: true });
@@ -181,7 +182,7 @@ export function LanternField({ active, cabinPreview = false, videoFinale = false
         aria-label={isReleased ? `Wish lantern ${index + 1} has been released` : `${cabinPreview ? "Enter the sky with" : "Read"} wish lantern ${index + 1}`} aria-pressed={chosen} tabIndex={interactive && selectedId === null && (!videoFinale || videoSelectable) && !isReleased && focusId === index ? 0 : -1} disabled={isReleased || (videoFinale && !videoSelectable) || (chosen && releasing)}
         onFocus={() => setFocusId(index)} onKeyDown={(event) => moveFocus(event, index)} onClick={() => { if (selectedId !== null || isReleased || (videoFinale && !videoSelectable)) return; setFocusId(index); onSelect(id); }}>
         <span className="lantern-glow" aria-hidden="true"/>
-        <span className="lantern-paper" aria-hidden="true"><span className="lantern-paper-seam"/></span>
+        <span className="lantern-paper" aria-hidden="true"><span className="lantern-paper-seam"/><span className="lantern-panels"><i/><i/><i/><i/><i/><i/></span></span>
         <span className="lantern-frame" aria-hidden="true"/>
         <span className="lantern-flame" aria-hidden="true"/>
         <span className="lantern-ember lantern-ember-one" aria-hidden="true"/>

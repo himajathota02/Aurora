@@ -953,3 +953,224 @@ button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
     padding: 8px 9px;
   }
 }
+
+/* =====================================================================
+   AURORA polish: glowing sky lanterns + real paper wish notes.
+   Paste at the VERY END of app/globals.css so it overrides earlier rules.
+   ===================================================================== */
+
+:root{--wish-hand:var(--font-note,'Cormorant Garamond','EB Garamond','Palatino Linotype',Georgia,serif)}
+
+/* ---------- LANTERNS (true 3D: a turning, translucent six-panel paper lantern) ---------- */
+.lantern-field.is-active{--lk:.72}
+.lantern-field.is-cabin-preview{--lk:.68}
+body .lantern-field .lantern-hit{--lw:calc(var(--final-paper-width,28px)*var(--lk,1)*1.12);--lh:calc(var(--final-paper-height,44px)*var(--lk,1)*1.05);--spin:calc(var(--float,9s)*2.2)}
+body .lantern-field .lantern-thread{display:none}
+
+/* warm halo that breathes and sways */
+body .lantern-field .lantern-hit .lantern-glow{
+  position:absolute;left:50%;top:50%;width:calc(var(--lw)*2.8);height:calc(var(--lh)*2.2);
+  transform:translate(-50%,-50%);border-radius:50%;filter:blur(6px);opacity:1;
+  background:radial-gradient(ellipse at 50% 58%,rgba(255,226,160,.6) 0%,rgba(255,165,64,.28) 30%,rgba(240,110,34,.1) 52%,transparent 72%);
+  animation:lt-breathe var(--flicker-duration,1.6s) ease-in-out var(--flicker-delay,0s) infinite alternate,lt-sway calc(var(--float,9s)*.9) ease-in-out var(--delay,0s) infinite alternate;
+  transition:transform .5s cubic-bezier(.2,.7,.2,1)
+}
+body .lantern-field .lantern-hit:hover .lantern-glow,body .lantern-field .lantern-hit:focus-visible .lantern-glow{transform:translate(-50%,-50%) scale(1.4)}
+body .lantern-field .lantern-hit.is-selected .lantern-glow{transform:translate(-50%,-50%) scale(1.7)}
+
+/* the 3D "stage" */
+body .lantern-field .lantern-hit .lantern-paper{
+  position:absolute;left:50%;top:calc(50% - var(--lh)*.67);width:var(--lw);height:var(--lh);
+  transform:translateX(-50%);overflow:visible;clip-path:none;border:0;border-radius:0;background:none;box-shadow:none;filter:none;
+  perspective:calc(var(--lw)*6);animation:lt-sway calc(var(--float,9s)*.9) ease-in-out var(--delay,0s) infinite alternate
+}
+/* bright core of light inside, seen through the paper */
+body .lantern-field .lantern-hit .lantern-paper:before{
+  content:"";position:absolute;inset:8% 14% 2%;border-radius:50%;filter:blur(2px);opacity:1;
+  background:radial-gradient(ellipse at 50% 72%,#fffbe0 0%,#ffd56e 36%,rgba(255,150,50,0) 76%);
+  animation:lt-core var(--flicker-duration,1.6s) ease-in-out var(--flicker-delay,0s) infinite alternate
+}
+body .lantern-field .lantern-hit .lantern-paper:after{display:none}
+
+/* six translucent panels in a ring, slowly turning and gently tilting */
+body .lantern-field .lantern-hit .lantern-panels{
+  position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-9deg) rotateY(-20deg);will-change:transform;
+  animation:lt-spin var(--spin) linear var(--delay,0s) infinite,lt-tilt calc(var(--float,9s)*.8) ease-in-out var(--delay,0s) infinite alternate
+}
+body .lantern-field .lantern-hit .lantern-panels i{
+  position:absolute;left:50%;top:0;display:block;width:calc(var(--lw)*.53);height:100%;margin-left:calc(var(--lw)*-.265);
+  transform:rotateY(var(--a,0deg)) translateZ(calc(var(--lw)*.433));
+  clip-path:polygon(24% 0,76% 0,94% 26%,100% 54%,92% 80%,70% 100%,30% 100%,8% 80%,0 54%,6% 26%);
+  opacity:.88;
+  background:
+    linear-gradient(180deg,transparent 0 29%,rgba(120,45,12,.3) 29% 31%,transparent 31% 64%,rgba(120,45,12,.28) 64% 66%,transparent 66%),
+    linear-gradient(180deg,rgba(120,40,10,.72) 0%,rgba(120,40,10,0) 32%),
+    linear-gradient(90deg,rgba(110,36,10,.65) 0,rgba(255,190,90,0) 15%,rgba(255,190,90,0) 85%,rgba(110,36,10,.65) 100%),
+    linear-gradient(180deg,#ffae45 0%,#ffcb70 52%,#ffe7a8 100%)
+}
+body .lantern-field .lantern-hit .lantern-panels i:after{
+  content:"";position:absolute;inset:0;opacity:0;
+  background:linear-gradient(90deg,rgba(90,26,6,.6),rgba(90,26,6,.12) 50%,rgba(90,26,6,.6));
+  animation:lt-facet var(--spin) linear infinite;animation-delay:calc(var(--delay,0s) - var(--spin)*var(--k,0)/6)
+}
+body .lantern-field .lantern-hit .lantern-panels i:nth-child(1){--a:0deg;--k:0}
+body .lantern-field .lantern-hit .lantern-panels i:nth-child(2){--a:60deg;--k:1}
+body .lantern-field .lantern-hit .lantern-panels i:nth-child(3){--a:120deg;--k:2}
+body .lantern-field .lantern-hit .lantern-panels i:nth-child(4){--a:180deg;--k:3}
+body .lantern-field .lantern-hit .lantern-panels i:nth-child(5){--a:240deg;--k:4}
+body .lantern-field .lantern-hit .lantern-panels i:nth-child(6){--a:300deg;--k:5}
+
+/* top cap */
+body .lantern-field .lantern-hit .lantern-paper-seam{
+  position:absolute;left:50%;top:-4px;bottom:auto;width:44%;height:6px;transform:translateX(-50%);z-index:2;
+  border-radius:4px 4px 1px 1px;background:linear-gradient(90deg,#5a2510,#b5622a 45%,#5a2510);box-shadow:0 0 5px rgba(255,190,100,.5)
+}
+/* bottom ring */
+body .lantern-field .lantern-hit .lantern-frame{
+  position:absolute;z-index:3;left:50%;top:calc(50% + var(--lh)*.33 - 2px);width:calc(var(--lw)*.56);height:5px;transform:translateX(-50%);
+  border:0;border-radius:2px;background:linear-gradient(90deg,#4a2210,#b06a2c 50%,#4a2210);box-shadow:0 0 6px rgba(255,190,90,.65);
+  animation:lt-sway calc(var(--float,9s)*.9) ease-in-out var(--delay,0s) infinite alternate
+}
+body .lantern-field .lantern-hit .lantern-frame:after{display:none}
+/* dancing flame */
+body .lantern-field .lantern-hit .lantern-flame{
+  position:absolute;z-index:4;left:50%;top:calc(50% + var(--lh)*.33 - 5px);width:calc(var(--lw)*.32);height:calc(var(--lh)*.36);
+  transform:translateX(-50%);transform-origin:50% 100%;border-radius:50% 50% 48% 48%;
+  background:radial-gradient(ellipse at 50% 77%,#fffce1 0 12%,#ffe57b 24%,#ffb548 50%,#f57725 74%,rgba(239,106,32,0) 100%);
+  filter:drop-shadow(0 0 4px rgba(255,201,88,.95));
+  animation:lt-flame var(--flicker-duration,1.6s) ease-in-out var(--flicker-delay,0s) infinite alternate,lt-sway calc(var(--float,9s)*.9) ease-in-out var(--delay,0s) infinite alternate
+}
+/* embers rise from every lantern */
+body .lantern-field .lantern-hit .lantern-ember{display:block!important;top:calc(50% + var(--lh)*.33 + 4px);background:#ffe7a8;box-shadow:0 0 5px 1px rgba(255,170,64,.9)}
+/* soft "tap me" ripple */
+body .lantern-field .lantern-hit:nth-child(3n+1):not(.is-released):not(.is-selected):after{
+  content:"";position:absolute;left:50%;top:50%;width:calc(var(--lw)*1.9);height:calc(var(--lw)*1.9);border-radius:50%;
+  border:1px solid rgba(255,214,140,.55);pointer-events:none;animation:lt-ripple 4.6s ease-out var(--ember-delay,0s) infinite
+}
+body .lantern-field .lantern-hit:focus-visible{outline:1.5px dashed rgba(255,232,178,.9);outline-offset:4px;border-radius:50%}
+
+@keyframes lt-spin{from{transform:rotateX(-9deg) rotateY(0deg)}to{transform:rotateX(-9deg) rotateY(360deg)}}
+@keyframes lt-tilt{from{rotate:z -3.5deg}to{rotate:z 3.5deg}}
+@keyframes lt-facet{0%,100%{opacity:0}50%{opacity:.6}}
+@keyframes lt-sway{from{translate:-1.8px 0}to{translate:1.8px 0}}
+@keyframes lt-breathe{from{opacity:.68;scale:.93}to{opacity:1;scale:1.1}}
+@keyframes lt-core{from{opacity:.72}to{opacity:1}}
+@keyframes lt-flame{
+  0%{transform:translateX(-50%) scale(1,1) rotate(-2deg)}
+  25%{transform:translateX(-50%) scale(.9,1.14) rotate(2deg)}
+  50%{transform:translateX(-50%) scale(1.07,.93) rotate(-1deg)}
+  75%{transform:translateX(-50%) scale(.95,1.1) rotate(3deg)}
+  100%{transform:translateX(-50%) scale(1,1) rotate(-2deg)}
+}
+@keyframes lt-ripple{0%{transform:translate(-50%,-50%) scale(.6);opacity:.55}100%{transform:translate(-50%,-50%) scale(1.9);opacity:0}}
+
+/* lighter on phones: keep the turning, drop the per-panel shading animation */
+@media (hover:none){body .lantern-field .lantern-hit .lantern-panels i:after{animation:none;opacity:.18}}
+@media (prefers-reduced-motion:reduce){
+  body .lantern-field .lantern-hit .lantern-glow,body .lantern-field .lantern-hit .lantern-paper,body .lantern-field .lantern-hit .lantern-paper:before,body .lantern-field .lantern-hit .lantern-panels,body .lantern-field .lantern-hit .lantern-panels i:after,body .lantern-field .lantern-hit .lantern-frame,body .lantern-field .lantern-hit .lantern-flame,body .lantern-field .lantern-hit:after{animation:none!important}
+}
+.reduced-motion .lantern-field .lantern-hit .lantern-glow,.reduced-motion .lantern-field .lantern-hit .lantern-paper,.reduced-motion .lantern-field .lantern-hit .lantern-paper:before,.reduced-motion .lantern-field .lantern-hit .lantern-panels,.reduced-motion .lantern-field .lantern-hit .lantern-panels i:after,.reduced-motion .lantern-field .lantern-hit .lantern-frame,.reduced-motion .lantern-field .lantern-hit .lantern-flame{animation:none!important}
+
+/* ---------- WISH NOTE (clean stationery letter) ---------- */
+.wish-filter-defs{position:absolute;width:0;height:0;pointer-events:none}
+.affirmation-note.wish-note{
+  width:min(520px,calc(100vw - 28px));height:fit-content;min-height:0;max-height:none;padding:0;border:0;background:none;
+  box-shadow:none;clip-path:none;overflow:visible;isolation:auto;color:#3b2a1e;
+  filter:drop-shadow(0 22px 34px rgba(0,0,0,.45)) drop-shadow(0 0 40px rgba(255,190,100,.18))
+}
+.affirmation-note.wish-note:before,.affirmation-note.wish-note:after{display:none}
+
+.wish-tape{
+  position:absolute;z-index:3;left:50%;top:-13px;width:104px;height:28px;margin-left:-52px;transform:rotate(-2deg);
+  background:repeating-linear-gradient(135deg,rgba(255,236,190,.85) 0 7px,rgba(244,200,156,.85) 7px 14px);
+  box-shadow:0 1px 3px rgba(0,0,0,.28);
+  clip-path:polygon(0 0,3% 12%,0 25%,3% 38%,0 50%,3% 62%,0 75%,3% 88%,0 100%,100% 100%,97% 88%,100% 75%,97% 62%,100% 50%,97% 38%,100% 25%,97% 12%,100% 0)
+}
+
+.wish-sheet{
+  position:relative;display:flex;flex-direction:column;max-height:calc(100svh - 70px);padding:50px 46px 22px;
+  background-color:#f6ecd6;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .3 0 0 0 0 .17 0 0 0 1.1 -.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 38%,#fbf4e3 0%,rgba(251,244,227,0) 70%),
+    linear-gradient(160deg,#f1e3c2 0%,#f7eedb 50%,#eddcb6 100%);
+  box-shadow:inset 0 0 46px rgba(139,96,45,.24)
+}
+/* thin inner border, like printed stationery */
+.wish-sheet:before{content:"";position:absolute;inset:14px;border:1px solid rgba(138,74,52,.22);border-radius:2px;pointer-events:none}
+
+/* crumple facets: visible only while the paper is crumpled */
+.wish-creases{position:absolute;inset:0;pointer-events:none;z-index:2}
+.wish-creases svg{width:100%;height:100%;display:block}
+.wish-creases polygon{stroke:rgba(90,60,28,.4);stroke-width:1;vector-effect:non-scaling-stroke}
+
+.wish-sheet .note-close{
+  z-index:3;right:20px;top:20px;width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;
+  background:rgba(120,80,40,.08);color:#7a5c3a;outline:none;box-shadow:none;transition:background .2s
+}
+.wish-sheet .note-close:hover{background:rgba(120,80,40,.18)}
+.wish-sheet .note-close:focus-visible{box-shadow:0 0 0 2px rgba(138,74,52,.6)}
+
+.wish-body{position:relative;z-index:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;text-align:center;padding:4px 6px 0}
+.wish-note .wish-eyebrow{
+  margin:0 0 14px;font:600 10.5px/1 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:.22em;text-transform:uppercase;color:rgba(138,74,52,.8)
+}
+.wish-note .wish-eyebrow:before,.wish-note .wish-eyebrow:after{content:"\2726";margin:0 10px;font-size:9px;opacity:.65}
+.wish-note .wish-opening{margin:0;font:italic 600 clamp(25px,3.2vw,30px)/1.25 var(--wish-hand);color:#7a3f2c}
+.wish-divider{display:block;width:70px;height:1px;margin:14px auto 16px;background:linear-gradient(90deg,transparent,rgba(138,74,52,.6),transparent)}
+.wish-note .wish-body h2{margin:0;max-width:none;font:italic 500 clamp(22px,2.7vw,25px)/1.6 var(--wish-hand);color:#3b2a1e;text-wrap:pretty}
+
+.wish-footer{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
+.wish-seal{
+  position:relative;width:38px;height:38px;border-radius:50% 46% 52% 48%;display:grid;place-items:center;transform:rotate(-8deg);flex:none;
+  background:radial-gradient(circle at 34% 30%,#e4575f 0,#b3202e 48%,#7e1320 100%);
+  box-shadow:inset 0 2px 3px rgba(255,190,190,.5),inset 0 -3px 5px rgba(60,0,10,.55),0 2px 4px rgba(60,20,10,.4);
+  color:rgba(255,215,215,.9);font-size:16px;line-height:1
+}
+.wish-seal:before{content:"";position:absolute;inset:4px;border:1.5px solid rgba(255,200,200,.35);border-radius:50%}
+.wish-footer button{
+  display:flex;align-items:center;gap:6px;min-height:42px;padding:6px 18px;border:0;border-radius:999px;cursor:pointer;
+  background:#7a3f2c;color:#fbeedd;font:italic 600 clamp(19px,2.3vw,21px)/1 var(--wish-hand);
+  box-shadow:0 2px 6px rgba(80,35,20,.35);transition:background .2s,transform .2s
+}
+.wish-footer button:hover:not(:disabled),.wish-footer button:focus-visible{background:#96502f;transform:translateY(-1px);outline:none}
+.wish-footer button:focus-visible{box-shadow:0 0 0 3px rgba(150,80,47,.4)}
+.wish-footer button:disabled{opacity:.7;cursor:default}
+
+@media (max-width:650px){
+  .wish-sheet{padding:44px 26px 18px}
+  .wish-sheet:before{inset:10px}
+  .wish-sheet .note-close{right:14px;top:14px}
+}
+/* AURORA PERFORMANCE: keep lanterns visually warm without costly layered animation.
+   The aurora/background and other scenes retain their existing motion. */
+.lantern-field {
+  transition: opacity 0.35s ease;
+}
+.lantern-field .lantern-hit,
+.lantern-field .lantern-hit *,
+.lantern-field .lantern-hit *::before,
+.lantern-field .lantern-hit *::after {
+  animation: none !important;
+}
+.lantern-field .lantern-hit {
+  transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
+  will-change: auto;
+}
+.lantern-field .lantern-hit .lantern-panels {
+  transform: rotateX(-9deg) rotateY(-20deg);
+  will-change: auto !important;
+}
+.lantern-field .lantern-hit .lantern-glow,
+.lantern-field .lantern-hit .lantern-paper,
+.lantern-field .lantern-hit .lantern-flame {
+  will-change: auto !important;
+}
+.lantern-field .lantern-hit .lantern-ember {
+  display: none !important;
+}
+/* Keep selection and wish-release transitions available. */
+.lantern-field .lantern-hit.is-selected,
+.lantern-field .lantern-hit.is-selected.is-releasing {
+  transition: left 0.45s ease, top 0.45s ease, transform 0.45s ease, opacity 0.3s ease, filter 0.3s ease;
+}
