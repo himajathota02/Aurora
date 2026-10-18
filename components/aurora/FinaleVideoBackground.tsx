@@ -17,6 +17,7 @@ export function FinaleVideoBackground({
 }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const onReadyRef = useRef(onReady);
+  const [hasFrame, setHasFrame] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
 
   useEffect(() => {
@@ -47,12 +48,21 @@ export function FinaleVideoBackground({
       return;
     }
 
-    void startVideo();
+    let cancelled = false;
+    video.muted = true;
+    void video.play().then(() => {
+      if (!cancelled) setPlaybackBlocked(false);
+    }).catch(() => {
+      if (cancelled) return;
+      setPlaybackBlocked(true);
+      onReadyRef.current(false);
+    });
 
     return () => {
+      cancelled = true;
       video.pause();
     };
-  }, [active, reducedMotion, startVideo]);
+  }, [active, reducedMotion]);
 
   const handlePlaying = () => {
     setPlaybackBlocked(false);
@@ -72,15 +82,15 @@ export function FinaleVideoBackground({
     >
       <video
         ref={videoRef}
-        className="finale-loop-video is-visible"
+        className={`finale-loop-video ${hasFrame ? "is-visible" : ""}`}
         src={VIDEO_SRC}
         autoPlay={active && !reducedMotion}
         muted
         playsInline
         loop
         preload="auto"
-        poster="/aurora-arctic.jpg"
         aria-hidden="true"
+        onLoadedData={() => { setHasFrame(true); onReadyRef.current(true); }}
         onPlaying={handlePlaying}
         onError={handleError}
       />

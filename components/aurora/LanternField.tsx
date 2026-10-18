@@ -166,9 +166,19 @@ export function LanternField({ active, cabinPreview = false, videoFinale = false
       if (!wish) return null;
       const id = wish.id;
       const videoPoint = wishLanternVideoPositions[index];
-      const style = {
-        "--x": `${lantern.x}%`, "--y": `${lantern.y}%`, "--mx": `${lantern.mobileX}%`, "--my": `${lantern.mobileY}%`, "--cx": `${lantern.cabinX}%`, "--cy": `${lantern.cabinY}%`,
-        "--fx": `${videoPoint.x}%`, "--fy": `${videoPoint.y}%`,
+const portraitPoint = wishLanternVideoPortraitPositions[index] ?? videoPoint;
+
+const style = {
+  "--x": `${lantern.x}%`,
+  "--y": `${lantern.y}%`,
+  "--mx": `${lantern.mobileX}%`,
+  "--my": `${lantern.mobileY}%`,
+  "--cx": `${lantern.cabinX}%`,
+  "--cy": `${lantern.cabinY}%`,
+  "--fx": `${videoPoint.x}%`,
+  "--fy": `${videoPoint.y}%`,
+  "--fmx": `${portraitPoint.x}%`,
+  "--fmy": `${portraitPoint.y}%`,
         "--scale": lantern.scale.toFixed(2), "--glow": lantern.glow.toFixed(2), "--delay": `${-(index * 1.63).toFixed(2)}s`,
         "--reveal-delay": `${reducedMotion ? 0 : index * 0.08}s`,
         "--float": `${8 + (index % 4) * 1.7}s`, "--lantern-width": `${10 + lantern.scale * 3}px`, "--lantern-height": `${19 + lantern.scale * 5}px`,

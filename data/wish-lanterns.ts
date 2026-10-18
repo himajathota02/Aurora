@@ -54,11 +54,32 @@ export const wishLanternPositions = [
 
 /** Percentages in the source 1280×720 video frame (object-fit: cover). */
 export const wishLanternVideoPositions = [
-  { x: 20, y: 23 }, { x: 45, y: 27 }, { x: 72, y: 24 }, { x: 80, y: 38 }, { x: 70, y: 45 },
-  { x: 38, y: 31 }, { x: 29, y: 34 }, { x: 55, y: 40 }, { x: 63, y: 28 }, { x: 93, y: 20 },
-  { x: 10, y: 34 }, { x: 12, y: 18 }, { x: 36, y: 47 }, { x: 56, y: 27 }, { x: 88, y: 31 },
-  { x: 14, y: 43 }, { x: 25, y: 27 }, { x: 47, y: 44 }, { x: 84, y: 15 }, { x: 95, y: 39 },
-  { x: 52, y: 12 }, { x: 63, y: 37 },
+  { x: 10, y: 22 },
+  { x: 29, y: 20 },
+  { x: 49, y: 23 },
+  { x: 69, y: 21 },
+  { x: 89, y: 24 },
+
+  { x: 19, y: 32 },
+  { x: 39, y: 34 },
+  { x: 59, y: 31 },
+  { x: 79, y: 34 },
+  { x: 94, y: 36 },
+
+  { x: 8, y: 43 },
+  { x: 27, y: 45 },
+  { x: 46, y: 42 },
+  { x: 65, y: 45 },
+  { x: 84, y: 43 },
+
+  { x: 14, y: 55 },
+  { x: 33, y: 57 },
+  { x: 52, y: 54 },
+  { x: 71, y: 57 },
+  { x: 91, y: 54 },
+
+  { x: 23, y: 62 },
+  { x: 77, y: 62 },
 ] as const;
 
 /** Percentages of the visible cover crop on portrait viewports. */

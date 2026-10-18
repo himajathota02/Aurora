@@ -9,6 +9,7 @@ type Props = { reducedMotion: boolean; onEnter: () => void };
 export function AuroraIntro({ reducedMotion, onEnter }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoError, setVideoError] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const [arrived, setArrived] = useState(false);
   const [dialogueStage, setDialogueStage] = useState(0);
@@ -44,8 +45,8 @@ export function AuroraIntro({ reducedMotion, onEnter }: Props) {
     initial={{ opacity: 0, scale: reducedMotion ? 1 : 1.015 }} animate={{ opacity: 1, scale: 1 }}
     exit={{ opacity: 0, scale: reducedMotion ? 1 : 1.045, transition: { duration: reducedMotion ? 0.08 : 0.8, ease: [0.72, 0, 0.28, 1] } }}
     transition={{ duration: reducedMotion ? 0.12 : 1.15, ease: [0.2, 0.75, 0.2, 1] }}>
-    <video ref={videoRef} className="aurora-intro-video" autoPlay muted playsInline loop preload="auto" aria-hidden="true"
-      onCanPlay={() => setVideoError(false)} onError={() => { setVideoError(true); setAutoplayBlocked(false); }}>
+    <video ref={videoRef} className={`aurora-intro-video ${videoReady ? "has-frame" : ""}`} autoPlay muted playsInline loop preload="auto" aria-hidden="true"
+      onLoadedData={() => { setVideoReady(true); setVideoError(false); }} onCanPlay={() => { setVideoReady(true); setVideoError(false); }} onError={() => { setVideoError(true); setAutoplayBlocked(false); }}>
       <source src="/assets/aurora-bg.mp4" type="video/mp4"/>
     </video>
     <div className="aurora-intro-shade" aria-hidden="true"/>

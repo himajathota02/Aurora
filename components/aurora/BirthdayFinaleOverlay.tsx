@@ -1,30 +1,33 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { BoyCharacter } from "./BoyCharacter";
+import { wishLanterns } from "../../data/wish-lanterns";
 
 type Props = {
   reducedMotion: boolean;
   backgroundReady: boolean;
-  allWishesReleased: boolean;
+  releasedLanternIds: ReadonlySet<string>;
+  wishReleasing: boolean;
   onLanternsReveal: () => void;
-  onLanternsReady: () => void;
   onSeeWishesAgain: () => void;
+  children: ReactNode;
 };
 
 /** Stages the boy, birthday copy, and quiet ending over the moving finale film. */
-export function BirthdayFinaleOverlay({ reducedMotion, backgroundReady, allWishesReleased, onLanternsReveal, onLanternsReady, onSeeWishesAgain }: Props) {
+export function BirthdayFinaleOverlay({ reducedMotion, backgroundReady, releasedLanternIds, wishReleasing, onLanternsReveal, onSeeWishesAgain, children }: Props) {
   const [boyVisible, setBoyVisible] = useState(false);
   const [headingVisible, setHeadingVisible] = useState(false);
   const [dedicationVisible, setDedicationVisible] = useState(false);
   const [endingMinimized, setEndingMinimized] = useState(false);
   const revealRef = useRef(onLanternsReveal);
-  const readyRef = useRef(onLanternsReady);
   const dedicationTimer = useRef<number | null>(null);
   const arrivalTimer = useRef<number | null>(null);
   const arrivedRef = useRef(false);
+  const allWishesReleased = !wishReleasing && wishLanterns.every(({ id }) => releasedLanternIds.has(id));
 
-  useEffect(() => { revealRef.current = onLanternsReveal; readyRef.current = onLanternsReady; }, [onLanternsReveal, onLanternsReady]);
+  useEffect(() => { revealRef.current = onLanternsReveal; }, [onLanternsReveal]);
 
   useEffect(() => {
   if (!backgroundReady) return;
@@ -60,7 +63,6 @@ export function BirthdayFinaleOverlay({ reducedMotion, backgroundReady, allWishe
     setHeadingVisible(true);
     dedicationTimer.current = window.setTimeout(() => {
       setDedicationVisible(true);
-      readyRef.current();
     }, reducedMotion ? 80 : 850);
   }, [reducedMotion]);
 
@@ -73,6 +75,7 @@ export function BirthdayFinaleOverlay({ reducedMotion, backgroundReady, allWishe
 
   return <div className={`birthday-finale ${reducedMotion ? "is-reduced" : ""}`}>
     {boyVisible && <BoyCharacter className="birthday-boy-character" reducedMotion={reducedMotion} onArrive={onBoyArrive}/>}
+    {children}
     {headingVisible && (
   <p className="birthday-finale-heading">
     <span className="birthday-heading-star" aria-hidden="true">
@@ -115,7 +118,7 @@ export function BirthdayFinaleOverlay({ reducedMotion, backgroundReady, allWishe
   </p>
 
   <p>
-    Whether it's a good day , bad day or at night 2am, I’ll be here. 
+    Whether it&apos;s a good day , bad day or at night 2am, I’ll be here.
   </p>
 
   <p>
