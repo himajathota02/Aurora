@@ -27,7 +27,9 @@ export function LanternField({ active, cabinPreview = false, videoFinale = false
   const lanterns = useMemo(() => makeLanterns(30), []);
 
   useEffect(() => {
-    if (!active) return;
+    // Pause the decorative canvas while the note is foregrounded; the aurora
+    // background and the selected lantern's own CSS transition remain active.
+    if (!active || selectedId !== null) return;
     
     const canvas = canvasRef.current;
     const host = canvas?.parentElement;
@@ -106,7 +108,7 @@ export function LanternField({ active, cabinPreview = false, videoFinale = false
     observer.observe(host);
     resize();
     return () => { observer.disconnect(); cancelAnimationFrame(frame); };
-  }, [active, lanterns, reducedMotion]);
+  }, [active, lanterns, reducedMotion, selectedId]);
 
   useEffect(() => {
     if (!videoFinale) return;
@@ -188,16 +190,22 @@ const style = {
       } as CSSProperties;
       const chosen = selectedId === id;
       const isReleased = releasedIds.has(id);
-      return <button className={`lantern-hit ${chosen ? "is-selected" : ""} ${chosen && releasing ? "is-releasing" : ""} ${isReleased ? "is-released" : ""}`} style={style} key={id} id={`aurora-lantern-${id}`} data-lantern-id={id} data-lantern-index={index} data-video-lantern={videoFinale ? "true" : undefined}
+      return <button className={`lantern-hit ${chosen ? "is-selected" : ""} ${chosen && releasing ? "is-releasing" : ""} ${isReleased ? "is-released" : ""} ${videoFinale && (id === "wish-04" || id === "wish-08") ? "is-stable-finale-lantern" : ""}`} style={style} key={id} id={`aurora-lantern-${id}`} data-lantern-id={id} data-lantern-index={index} data-video-lantern={videoFinale ? "true" : undefined}
         aria-label={isReleased ? `Wish lantern ${index + 1} has been released` : `${cabinPreview ? "Enter the sky with" : "Read"} wish lantern ${index + 1}`} aria-pressed={chosen} tabIndex={interactive && selectedId === null && (!videoFinale || videoSelectable) && !isReleased && focusId === index ? 0 : -1} disabled={isReleased || (videoFinale && !videoSelectable) || (chosen && releasing)}
         onFocus={() => setFocusId(index)} onKeyDown={(event) => moveFocus(event, index)} onClick={() => { if (selectedId !== null || isReleased || (videoFinale && !videoSelectable)) return; setFocusId(index); onSelect(id); }}>
-        <span className="lantern-glow" aria-hidden="true"/>
-        <span className="lantern-paper" aria-hidden="true"><span className="lantern-paper-seam"/><span className="lantern-panels"><i/><i/><i/><i/><i/><i/></span></span>
-        <span className="lantern-frame" aria-hidden="true"/>
-        <span className="lantern-flame" aria-hidden="true"/>
-        <span className="lantern-ember lantern-ember-one" aria-hidden="true"/>
-        <span className="lantern-ember lantern-ember-two" aria-hidden="true"/>
-        <span className="lantern-thread" aria-hidden="true"/>
+        {videoFinale && (id === "wish-04" || id === "wish-08") ? (
+  <span className="lantern-simple-body" aria-hidden="true" />
+) : (
+  <>
+    <span className="lantern-glow" aria-hidden="true"/>
+    <span className="lantern-paper" aria-hidden="true"><span className="lantern-paper-seam"/><span className="lantern-panels"><i/><i/><i/><i/><i/><i/></span></span>
+    <span className="lantern-frame" aria-hidden="true"/>
+    <span className="lantern-flame" aria-hidden="true"/>
+    <span className="lantern-ember lantern-ember-one" aria-hidden="true"/>
+    <span className="lantern-ember lantern-ember-two" aria-hidden="true"/>
+    <span className="lantern-thread" aria-hidden="true"/>
+  </>
+)}
       </button>;
     })}
   </div>;

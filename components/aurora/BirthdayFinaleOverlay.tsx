@@ -132,7 +132,7 @@ export function BirthdayFinaleOverlay({ reducedMotion, backgroundReady, released
   </p>
 
   <p className="birthday-closing-signoff">
-    Happy 22, Chinnu 🫀. I’m so glad you exist.
+    Happy 23, Chinnu 🫀. I’m so glad you exist.
   </p>
   <div className="birthday-closing-controls">
       <button

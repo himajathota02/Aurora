@@ -89,6 +89,7 @@ export function AffirmationNote({
 
   const [filterId] = useState(() => `wish-crumple-${++noteCounter}`);
   const [warped, setWarped] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   // p: 0 = crumpled ball, 1 = fully open sheet.
   // fly: 0..1 lifts the ball away when a wish is released.
@@ -129,6 +130,7 @@ export function AffirmationNote({
   const [photoOk, setPhotoOk] = useState(true);
   const showPhoto = !!scene && photoOk;
   const photoRef = useRef<HTMLImageElement>(null);
+  const developing = useRef(false);
 
   const develop = useMotionValue(reducedMotion ? 1 : 0);
 
@@ -141,7 +143,8 @@ export function AffirmationNote({
   const milkOpacity = useTransform(develop, [0, 0.7], [0.8, 0]);
 
   const startDevelop = () => {
-    if (reducedMotion || develop.get() > 0.02) return;
+    if (reducedMotion || developing.current || develop.get() > 0.02) return;
+    developing.current = true;
 
     animate(develop, 1, {
       duration: 1.8,
@@ -151,9 +154,17 @@ export function AffirmationNote({
   };
 
   useEffect(() => {
+    const query = window.matchMedia("(max-width: 650px)");
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
     const img = photoRef.current;
 
-    if (reducedMotion || !img || !img.complete || !img.naturalWidth) {
+    if (reducedMotion || !img || !img.complete || !img.naturalWidth || developing.current) {
       return;
     }
 
@@ -169,7 +180,10 @@ export function AffirmationNote({
   // Warp the paper while crumpled, then remove the filter when flat.
   useEffect(() => {
     const node = warpRef.current;
-    if (!node) return;
+    if (!node || isMobile || reducedMotion) {
+      setWarped(false);
+      return;
+    }
 
     const apply = (v: number) => {
       node.setAttribute(
@@ -187,7 +201,7 @@ export function AffirmationNote({
     apply(p.get());
 
     return p.on("change", apply);
-  }, [p, reducedMotion]);
+  }, [p, reducedMotion, isMobile]);
 
   // Opening animation.
   useEffect(() => {
@@ -299,7 +313,7 @@ export function AffirmationNote({
 
   return (
     <motion.article
-      className="affirmation-note wish-note"
+      className={`affirmation-note wish-note${isMobile ? " is-mobile-note" : ""}`}
       style={{ opacity: alpha, scale, rotate, y }}
       role="dialog"
       aria-modal="true"
@@ -360,9 +374,9 @@ export function AffirmationNote({
         <motion.div
           className="wish-sheet"
           style={{
-            clipPath,
+            clipPath: isMobile ? TORN : clipPath,
             filter:
-              warped && !reducedMotion
+              !isMobile && warped && !reducedMotion
                 ? `url(#${filterId})`
                 : "none",
           }}
@@ -445,7 +459,6 @@ export function AffirmationNote({
             {showPhoto && scene && (
               <figure className="wish-polaroid">
                 <div className="wish-photo">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <motion.img
                     ref={photoRef}
                     src={scene.src}
